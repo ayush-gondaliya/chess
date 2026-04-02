@@ -8,10 +8,10 @@ public class King extends Piece {
         super(color,col,row);
 
         if(color == GamePanel.WHITE){
-            image = getImage("/piece/white-king");
+            image = getImage("/pieces/white-king");
         }
         else{
-            image = getImage("/piece/black-king");
+            image = getImage("/pieces/black-king");
         }
     }      
 }
