@@ -13,5 +13,16 @@ public class Knight extends Piece {
         else{
             image = getImage("/pieces/black-knight");
         }
+    }
+    public boolean canMove(int targetCol, int targetRow){
+        if(isWithinBoard(targetCol, targetRow)){
+            // knight's movent ratio is 1:2 or 2:1
+            if(Math.abs(targetCol-preCol) * Math.abs(targetRow-preRow) == 2){
+                if(isValidSquare(targetCol, targetRow)){
+                    return true;
+                }
+            }
+        }
+        return false;
     } 
 }
