@@ -34,6 +34,9 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int BLACK = 1;
     int currentColor = WHITE;
 
+    //BOOLEANS
+    boolean canMove;
+    boolean validSquare;
 
 
     public GamePanel() {
@@ -68,7 +71,8 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new Knight(WHITE,6,7));
         pieces.add(new Bishop(WHITE,2,7));
         pieces.add(new Bishop(WHITE,5,7));
-        pieces.add(new King(WHITE,4,7));
+        // pieces.add(new King(WHITE,4,7));
+        pieces.add(new King(WHITE,4,4));
         pieces.add(new Queen(WHITE,3,7));
 
         // BLACK Team
@@ -134,18 +138,50 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         if(mouse.pressed == false){
+
             if(activeP != null){
-                activeP.updatePosition();
-                activeP = null;
+
+                if(validSquare){    //if validSquare=true then position will be updated
+                    //Move confirmed
+                    
+                    //Update the  piece list if a piece has been captured or removed during stimulation
+                    copyPieces(simPieces, pieces);      //simpiece as source and piece as target              
+                    activeP.updatePosition();            // so copying simpiece to piece
+                }
+                else{
+                    //The move is not valid therefor resetting everything
+                    copyPieces(pieces, simPieces);
+                    activeP.resetPosition();
+                    activeP = null;
+                }
             }
         }
     }
     
     private void simulate(){
+
+        canMove = false;
+        validSquare = false;
+
+        //Reset the piece list in every lop
+        //for restoring the removed pieces during simulation
+        copyPieces(pieces, simPieces);
+
         activeP.x = mouse.x - Board.HALF_SQUARE_SIZE;
         activeP.y = mouse.y - Board.HALF_SQUARE_SIZE;
         activeP.col = activeP.getCol(activeP.x);
         activeP.row = activeP.getRow(activeP.y);
+
+        //Check if the piece is hovering over a rechable squaree
+        if(activeP.canMove(activeP.col, activeP.row)){
+            canMove = true;
+
+            // if you capture a piece it will be removed
+            if(activeP.hittingP != null){
+                simPieces.remove(activeP.hittingP.getIndex()); //removes hittingP from list of simPiece 
+            }
+            validSquare = true;
+        }
     }
 
     protected void paintComponent(Graphics g){
@@ -160,10 +196,13 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         if(activeP != null){
-            g2.setColor(Color.WHITE);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.7));
-            g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE, Board.SQUARE_SIZE, Board.SQUARE_SIZE);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+            if(canMove){  // only highlight white background if we select rechable position for particular piece
+                g2.setColor(Color.WHITE);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.7));
+                g2.fillRect(activeP.col*Board.SQUARE_SIZE, activeP.row*Board.SQUARE_SIZE, Board.SQUARE_SIZE, Board.SQUARE_SIZE);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+            }
+            
 
             activeP.draw(g2);
         }
