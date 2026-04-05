@@ -12,8 +12,10 @@ import piece.Rook;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -28,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable {
     public static ArrayList<Piece> pieces = new ArrayList<>();
     public static ArrayList<Piece> simPieces = new ArrayList<>();
     Piece activeP;
+    public static Piece castlingP;
 
     // COLOR
     public static final int WHITE = 0;
@@ -67,13 +70,12 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new Pawn(WHITE,7,6));
         pieces.add(new Rook(WHITE,0,7));
         pieces.add(new Rook(WHITE,7,7));
-        pieces.add(new Knight(WHITE,1,7));
-        pieces.add(new Knight(WHITE,6,7));
-        pieces.add(new Bishop(WHITE,2,7));
-        pieces.add(new Bishop(WHITE,5,7));
-        // pieces.add(new King(WHITE,4,7));
-        pieces.add(new King(WHITE,4,4));
-        pieces.add(new Queen(WHITE,3,7));
+        //pieces.add(new Knight(WHITE,1,7));
+        //pieces.add(new Knight(WHITE,6,7));
+        //pieces.add(new Bishop(WHITE,2,7));
+        //pieces.add(new Bishop(WHITE,5,7));
+        pieces.add(new King(WHITE,4,7));
+        //pieces.add(new Queen(WHITE,3,7));
 
         // BLACK Team
         pieces.add(new Pawn(BLACK,0,1));
@@ -147,6 +149,10 @@ public class GamePanel extends JPanel implements Runnable {
                     //Update the  piece list if a piece has been captured or removed during stimulation
                     copyPieces(simPieces, pieces);      //simpiece as source and piece as target              
                     activeP.updatePosition();            // so copying simpiece to piece
+                    if(castlingP != null){
+                        castlingP.updatePosition();
+                    }
+                    changePlayer();
                 }
                 else{
                     //The move is not valid therefor resetting everything
@@ -167,6 +173,13 @@ public class GamePanel extends JPanel implements Runnable {
         //for restoring the removed pieces during simulation
         copyPieces(pieces, simPieces);
 
+        //reset castling move
+        if(castlingP != null){
+            castlingP.col = castlingP.preCol;
+            castlingP.x = castlingP.getX(castlingP.col);
+            castlingP = null;
+        }
+
         activeP.x = mouse.x - Board.HALF_SQUARE_SIZE;
         activeP.y = mouse.y - Board.HALF_SQUARE_SIZE;
         activeP.col = activeP.getCol(activeP.x);
@@ -180,10 +193,32 @@ public class GamePanel extends JPanel implements Runnable {
             if(activeP.hittingP != null){
                 simPieces.remove(activeP.hittingP.getIndex()); //removes hittingP from list of simPiece 
             }
+
+            checkCastling();
+
             validSquare = true;
         }
     }
-
+    private void checkCastling(){
+        if(castlingP != null){
+            if(castlingP.col  == 0){
+                castlingP.col += 3;
+            }
+            else if(castlingP.col == 7){
+                castlingP.col -= 2;
+            }
+            castlingP.x = castlingP.getX(castlingP.col);
+        }
+    }
+    private void changePlayer(){
+        if(currentColor == WHITE){
+            currentColor = BLACK;
+        }
+        else{
+            currentColor =  WHITE;
+        }
+        activeP = null;
+    }
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -205,6 +240,15 @@ public class GamePanel extends JPanel implements Runnable {
             
 
             activeP.draw(g2);
+        }
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setFont(new Font("Book Antiqua", Font.PLAIN, 30));
+        g2.setColor(Color.WHITE);
+        if(currentColor == WHITE){
+            g2.drawString("White's turn", 650, 550);
+        }
+        else{
+            g2.drawString("Black's turn", 650, 110);
         }
     }
 }
