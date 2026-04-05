@@ -1,11 +1,14 @@
 package piece;
 
 import main.GamePanel;
+import main.Type;
 
 public class Pawn extends Piece {
     
     public Pawn(int color, int col, int row){
         super(color,col,row);
+
+        type = Type.PAWN;
 
         if(color == GamePanel.WHITE){
             image = getImage("/pieces/white-pawn");
@@ -39,6 +42,16 @@ public class Pawn extends Piece {
             && hittingP != null && hittingP.color != color){
                     return true;
                 }
+            // En Peasant (in passing)
+            if(Math.abs(targetCol - preCol) == 1 && targetRow == preRow + moveValue){
+                for(Piece piece : GamePanel.simPieces){               // scans the list
+                    if(piece.col == targetCol && piece.row == preRow  //if there's piece having col equal to targetcol and row equal to prerow
+                        && piece.twoStepped == true){                 // and if that piece just moved by two square in previous turn 
+                        hittingP = piece;                             // then En Passant is succesful  
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

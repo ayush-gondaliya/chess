@@ -213,10 +213,23 @@ public class GamePanel extends JPanel implements Runnable {
     private void changePlayer(){
         if(currentColor == WHITE){
             currentColor = BLACK;
+
+            // Reset Black's twoStepped status
+            for(Piece piece : pieces){          // if we're switching to black then we scan the list
+                if(piece.color == BLACK){       // and find black pieces
+                    piece.twoStepped = false;   // and disable all black pieces' twostepped movement  
+                }
+            }
         }
         else{
             currentColor =  WHITE;
+            // Reset White's twoStepped status
+            for(Piece piece : pieces){
+                if(piece.color == WHITE){
+                    piece.twoStepped = false;
+                }
         }
+    }
         activeP = null;
     }
     protected void paintComponent(Graphics g){
