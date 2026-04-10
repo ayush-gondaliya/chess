@@ -412,15 +412,15 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("White's turn", 680, 550);
             if(checkingP != null && checkingP.color == BLACK){
                 g2.setColor(Color.red);
-                g2.drawString("The King", 660,650);    // joi leje aa 
-                g2.drawString("is in Check", 680, 150);
+                g2.drawString("The King", 660,300);    // joi leje aa 
+                g2.drawString("is in Check", 660, 350);
             }
         } else {
             g2.drawString("Black's turn", 680, 550);
             if(checkingP != null && checkingP.color == WHITE){
                 g2.setColor(Color.red);
-                g2.drawString("The King", 660,650);    // aa bhi
-                g2.drawString("is in Check", 680, 150);
+                g2.drawString("The King", 660,300);    // aa bhi
+                g2.drawString("is in Check", 660, 350);
             }
         }
     }
