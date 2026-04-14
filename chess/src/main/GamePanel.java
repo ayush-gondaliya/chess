@@ -1,6 +1,7 @@
 package main;
 
 import javax.swing.JPanel;
+import javax.xml.stream.events.StartElement;
 
 import piece.Bishop;
 import piece.King;
@@ -44,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
     boolean validSquare;
     boolean promotion;
     boolean gameover;
+    boolean stalemate;
 
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -139,7 +141,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (promotion) {
             promoting();
-        } else if (gameover == false) {
+        } else if (gameover == false && stalemate == false) {
             if (mouse.pressed) {
                 if (activeP == null) {
                     for (Piece piece : simPieces) {
@@ -170,7 +172,11 @@ public class GamePanel extends JPanel implements Runnable {
 
                         if (isKingInCheck() && isCheckmate()) {
                             gameover = true;
-                        } else {
+                        }                           
+                        else if(isStalemate() && isKingInCheck() == false){  //isKingInCheck() is added so that stalemate 
+                            stalemate = true;                                //doesn't happen when king is in check
+                        }
+                         else {
                             if (canPromote()) {
                                 promotion = true;
                             } else {
@@ -439,6 +445,26 @@ public class GamePanel extends JPanel implements Runnable {
         return isValidMove;
     }
 
+    private boolean isStalemate(){
+        
+        int count = 0;
+        //count no. of pieces
+        for(Piece piece : simPieces){
+            if(piece.color != currentColor){
+                count++;
+            }
+        }
+
+        //if only one piece(king) is left 
+        if(count == 1){
+            if(kingCanMove(getKing(true)) == false){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private void checkCastling() {
         if (castlingP != null) {
             if (castlingP.col == 0) {
@@ -587,6 +613,11 @@ public class GamePanel extends JPanel implements Runnable {
             g2.setFont(new Font("Arial", Font.PLAIN, 80));
             g2.setColor(Color.GREEN);
             g2.drawString(a, 250, 350);
+        }
+        if(stalemate){
+            g2.setFont(new Font("Arial", Font.PLAIN, 80));
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.drawString("Stalemate", 250, 350);
         }
     }
 }
