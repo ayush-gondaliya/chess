@@ -96,24 +96,13 @@ Run the file.
 
 ## 📸 Screenshots 
 
-Chess Board
-![Chess Board](screenshots/chess-board.png) 
+### Chess Board
 
-Pawn movements
- 
+<img src="src/screenshots/chess-board.png" width="600">
 
+### Pawn Movement
 
-
-
-
-
-
-
-
-
-
-
-
+<img src="src/screenshots/pawn-movement.png" width="600">
 
 En-passant:
 
